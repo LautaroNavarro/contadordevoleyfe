@@ -32,8 +32,8 @@ class Home extends Component {
                 <div className='text-center'>
                     <div className='titleContainer'>
                         <div className='mainTitule paddingTop20vh align-bottom mb-5'>
-                            <img src='/favicon.png' width='275' height='275' className='d-inline-block align-top mb-4' />
-                            <h1 className="text-dark">Contador de voley</h1>
+                            <img alt="volleyball icon" src='/favicon.png' width='275' height='275' className='d-inline-block align-top mb-4' />
+                            <h1 className="text-dark">Contador de voley </h1>
                         </div>
                     </div>
                     <div className='w-50 m-auto'>

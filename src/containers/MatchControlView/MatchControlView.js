@@ -4,6 +4,8 @@ import GeneralContext from './../../components/Context/GeneralContext';
 import axios from 'axios';
 import PermanentModal from './../../components/Modal/PermanentModal';
 import MatchSummary from './../../components/MatchSummary/MatchSummary';
+import TransparentPermanentModal from './../../components/Modal/TransparentPermanentModal';
+import Spinner from './../../components/Spinner/Spinner';
 
 
 class MatchControlView extends Component {
@@ -11,6 +13,8 @@ class MatchControlView extends Component {
     static contextType = GeneralContext;
 
     state = {
+        'disabled_buttons': false,
+        'loading': true,
         'id': null,
         'sets_number': 5,
         'access_code': null,
@@ -36,26 +40,38 @@ class MatchControlView extends Component {
     }
 
     async addPoint(team) {
-        if (this.state.game_status !== 1) {
+        if (this.state.game_status !== 1 && !this.state.disabled_buttons) {
+            this.setState({disabled_buttons: true});
             const response = await axios.post(
                 `/matches/${this.props.match.params.id}/${team}/add?token=${sessionStorage.getItem('token')}`
             );
+            response.data.match.disabled_buttons = false;
             this.setState(response.data.match);
         }
     }
 
     async subPoint(team) {
         if (this.state.game_status !== 1) {
+            this.setState({disabled_buttons: true});
             const response = await axios.post(
                 `/matches/${this.props.match.params.id}/${team}/sub?token=${sessionStorage.getItem('token')}`
             );
+            response.data.match.disabled_buttons = false;
             this.setState(response.data.match);
         }
     }
 
     async getMatch() {
         if (this.state.game_status !== 1) {
-            const response = await axios.get(`/matches/${this.props.match.params.id}`);
+            let response;
+            try {
+                response = await axios.get(`/matches/${this.props.match.params.id}`);
+            } catch(e) {
+                console.log(e);
+                this.setState({loading: false});
+                return null
+            }
+            response.data.match.loading = false;
             this.setState(response.data.match);
         }
     }
@@ -103,6 +119,18 @@ class MatchControlView extends Component {
     }
 
     render (){
+        let modal = '';
+        if (this.state.loading) {
+            modal=(
+                <TransparentPermanentModal>
+                    <div className='text-center row'style={{'minHeight': '70vh'}}>
+                        <div className='m-auto'>
+                            <Spinner />
+                        </div>
+                    </div>
+                </TransparentPermanentModal>
+            );
+        }
         return (
             <div>
                 {
@@ -112,6 +140,8 @@ class MatchControlView extends Component {
                                                 />
                                             </PermanentModal> : ''
                 }
+                {modal}
+                {this.state.id ?
                 <div className='text-center'>
                     <h2 className='pt-3 text-dark'>{`${this.state.teams[0].name} VS ${this.state.teams[1].name}`}</h2>
                     <h5 className='text-dark'>
@@ -136,13 +166,13 @@ class MatchControlView extends Component {
                             <div className='d-flex flex-row'>
                                 <div className='flex-fill pr-1'>
                                     <div
-                                        className='btn btn-block btn-secondary'
+                                        className={this.state.disabled_buttons ? 'btn btn-block btn-secondary clickeable disabled' : 'btn btn-block btn-secondary clickeable'}
                                         onClick={ () => {this.subPoint('team_one')}}
                                     >-</div>
                                 </div>
                                 <div className='flex-fill pl-1'>
                                     <div
-                                        className='btn btn-block btn-dark'
+                                        className={this.state.disabled_buttons ? 'btn btn-block btn-dark clickeable disabled' : 'btn btn-block btn-dark clickeable'}
                                         onClick={ () => {this.addPoint('team_one')}}
                                     >+</div>
                                 </div>
@@ -160,13 +190,13 @@ class MatchControlView extends Component {
                             <div className='d-flex flex-row'>
                                 <div className='flex-fill pr-1'>
                                     <div
-                                        className='btn btn-block btn-secondary'
+                                        className={this.state.disabled_buttons ? 'btn btn-block btn-secondary clickeable disabled' : 'btn btn-block btn-secondary clickeable'}
                                         onClick={ () => {this.subPoint('team_two')}}
                                     >-</div>
                                 </div>
                                 <div className='flex-fill pl-1'>
                                     <div
-                                        className='btn btn-block btn-dark'
+                                        className={this.state.disabled_buttons ? 'btn btn-block btn-dark clickeable disabled' : 'btn btn-block btn-dark clickeable'}
                                         onClick={ () => {this.addPoint('team_two')}}
                                     >+</div>
                                 </div>
@@ -174,6 +204,8 @@ class MatchControlView extends Component {
                         </div>
                     </div>
                 </div>
+            : ''}
+            {!this.state.id && !this.state.loading ? 'Empty state' : ''}
             </div>
         );
     }

@@ -4,6 +4,8 @@ import GeneralContext from './../../components/Context/GeneralContext';
 import axios from 'axios';
 import PermanentModal from './../../components/Modal/PermanentModal';
 import MatchSummary from './../../components/MatchSummary/MatchSummary';
+import TransparentPermanentModal from './../../components/Modal/TransparentPermanentModal';
+import Spinner from './../../components/Spinner/Spinner';
 
 
 class MatchControlView extends Component {
@@ -11,6 +13,7 @@ class MatchControlView extends Component {
     static contextType = GeneralContext;
 
     state = {
+        'loading': true,
         'id': null,
         'sets_number': 5,
         'access_code': null,
@@ -40,13 +43,21 @@ class MatchControlView extends Component {
         let args = this.props.location.search;
         if ( args !== undefined ) {
             let access_code = args.split('=')[1];
-            const response = await axios.get(`/matches/search/?access_code=${access_code}`);
+            let response;
+            try {
+                response = await axios.get(`/matches/search/?access_code=${access_code}`);
+            } catch(e) {
+                console.log(e);
+                this.setState({loading: false});
+                return null
+            }
+            response.data.match.loading = false;
             this.setState(response.data.match);
         }
     }
 
     async getMatch() {
-        if (this.state.game_status !== 1) {
+        if (this.state.game_status !== 1 && this.state.id !== null) {
             const response = await axios.get(`/matches/${this.state.id}`);
             this.setState(response.data.match);
         }
@@ -103,8 +114,21 @@ class MatchControlView extends Component {
     }
 
     render (){
+        let modal = '';
+        if (this.state.loading) {
+            modal=(
+                <TransparentPermanentModal>
+                    <div className='text-center row'style={{'minHeight': '70vh'}}>
+                        <div className='m-auto'>
+                            <Spinner />
+                        </div>
+                    </div>
+                </TransparentPermanentModal>
+            );
+        }
         return (
             <div>
+
                 {
                     this.state.winner_team ? <PermanentModal>
                                                 <MatchSummary
@@ -112,6 +136,8 @@ class MatchControlView extends Component {
                                                 />
                                             </PermanentModal> : ''
                 }
+                {modal}
+                {this.state.id ?
                 <div className='text-center'>
                     <h2 className='pt-3 text-dark'>{`${this.state.teams[0].name} VS ${this.state.teams[1].name}`}</h2>
                     <h5 className='text-dark' onClick={() => {navigator.clipboard.writeText(`http://${window.location.hostname}/matches/?access_code=${this.state.access_code}`)}}>
@@ -144,6 +170,8 @@ class MatchControlView extends Component {
                         </div>
                     </div>
                 </div>
+            : ''}
+            {!this.state.id && !this.state.loading ? 'Empty state' : ''}
             </div>
         );
     }

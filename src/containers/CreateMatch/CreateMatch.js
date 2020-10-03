@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import './CreateMatch.css';
 import GeneralContext from './../../components/Context/GeneralContext';
 import axios from 'axios';
+import TransparentPermanentModal from './../../components/Modal/TransparentPermanentModal';
+import Spinner from './../../components/Spinner/Spinner';
 
 
 class Home extends Component {
@@ -9,6 +11,7 @@ class Home extends Component {
     static contextType = GeneralContext;
 
     state = {
+        'loading': false,
         'sets_number': '5',
         'set_points_number': 25,
         'points_difference': 2,
@@ -25,13 +28,36 @@ class Home extends Component {
         ]
     }
 
+    validateForm = (e) => {
+        if (this.state.teams[0].name != "" && this.state.teams[1].name != "") {
+            return true;
+        }
+        return false;
+    }
+
     async handleSubmit() {
-        let stateCopy = {...this.state};
-        stateCopy.sets_number = parseInt(stateCopy.sets_number)
-        const response = await axios.post('/matches/', stateCopy);
-        sessionStorage.setItem('token', response.data.match.token);
-        const {setRedirect} = this.context;
-        setRedirect(`/matches/${response.data.match.id}`);
+        if (this.validateForm()){
+            let stateCopy = {...this.state};
+            stateCopy.sets_number = parseInt(stateCopy.sets_number)
+            delete stateCopy.loading;
+            this.setState({'loading': true});
+            let response;
+            try {
+                response = await axios.post('/matches/', stateCopy);
+            } catch (error) {
+                console.error(error);
+                this.setState({'loading': false});
+                const {raiseAlert} = this.context;
+                raiseAlert('Ocurrio un error al crear el partido', 'DANGER');
+                return null
+            }
+            sessionStorage.setItem('token', response.data.match.token);
+            const {setRedirect} = this.context;
+            setRedirect(`/matches/${response.data.match.id}`);
+        } else {
+            const {raiseAlert} = this.context;
+            raiseAlert('Team names are required', 'DANGER');
+        }
     }
 
     handleChangeTeamOneName = (e) => {
@@ -75,9 +101,22 @@ class Home extends Component {
     }
 
     render () {
+        let modal = "";
+        if (this.state.loading) {
+            modal=(
+                <TransparentPermanentModal>
+                    <div className="text-center row"style={{"minHeight": "70vh"}}>
+                        <div className="m-auto">
+                            <Spinner />
+                        </div>
+                    </div>
+                </TransparentPermanentModal>
+            );
+        }
         return (
             <div>
                 <div className='text-center'>
+                    {modal}
                     <h1 className='pt-3 pb-3 text-dark'>Crear nuevo partido</h1>
                         <form>
                             <div className='d-flex flex-row m-auto'>
