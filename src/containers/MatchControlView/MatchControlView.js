@@ -43,9 +43,16 @@ class MatchControlView extends Component {
     async addPoint(team) {
         if (this.state.game_status !== 1 && !this.state.disabled_buttons) {
             this.setState({disabled_buttons: true});
-            const response = await axios.post(
-                `/matches/${this.props.match.params.id}/${team}/add?token=${sessionStorage.getItem('token')}`
-            );
+            let response;
+            try {
+                response = await axios.post(
+                    `/matches/${this.props.match.params.id}/${team}/add?token=${sessionStorage.getItem('token')}`
+                );
+            } catch(e) {
+                console.log(e);
+                this.setState({disabled_buttons: false});
+                return null;
+            }
             response.data.match.disabled_buttons = false;
             this.setState(response.data.match);
         }
@@ -53,10 +60,23 @@ class MatchControlView extends Component {
 
     async subPoint(team) {
         if (this.state.game_status !== 1) {
+            let team_points = team === 'team_one' ? this.state.sets[ this.state.sets.length - 1].team_one_points : this.state.sets[ this.state.sets.length - 1].team_two_points;
+            if (team_points == 0) {
+                const {raiseAlert} = this.context;
+                raiseAlert('Operacion no permitida', 'DANGER');
+                return null;
+            }
             this.setState({disabled_buttons: true});
-            const response = await axios.post(
-                `/matches/${this.props.match.params.id}/${team}/sub?token=${sessionStorage.getItem('token')}`
-            );
+            let response;
+            try {
+                response = await axios.post(
+                    `/matches/${this.props.match.params.id}/${team}/sub?token=${sessionStorage.getItem('token')}`
+                );
+            } catch(e) {
+                console.log(e);
+                this.setState({disabled_buttons: false});
+                return null
+            }
             response.data.match.disabled_buttons = false;
             this.setState(response.data.match);
         }
