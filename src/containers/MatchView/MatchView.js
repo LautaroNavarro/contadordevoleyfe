@@ -40,14 +40,14 @@ class MatchControlView extends Component {
         let args = this.props.location.search;
         if ( args !== undefined ) {
             let access_code = args.split('=')[1];
-            const response = await axios.get(`/api/matches/search/?access_code=${access_code}`);
+            const response = await axios.get(`/matches/search/?access_code=${access_code}`);
             this.setState(response.data.match);
         }
     }
 
     async getMatch() {
         if (this.state.game_status !== 1) {
-            const response = await axios.get(`/api/matches/${this.state.id}`);
+            const response = await axios.get(`/matches/${this.state.id}`);
             this.setState(response.data.match);
         }
     }

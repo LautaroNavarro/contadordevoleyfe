@@ -38,7 +38,7 @@ class MatchControlView extends Component {
     async addPoint(team) {
         if (this.state.game_status !== 1) {
             const response = await axios.post(
-                `/api/matches/${this.props.match.params.id}/${team}/add?token=${sessionStorage.getItem('token')}`
+                `/matches/${this.props.match.params.id}/${team}/add?token=${sessionStorage.getItem('token')}`
             );
             this.setState(response.data.match);
         }
@@ -47,7 +47,7 @@ class MatchControlView extends Component {
     async subPoint(team) {
         if (this.state.game_status !== 1) {
             const response = await axios.post(
-                `/api/matches/${this.props.match.params.id}/${team}/sub?token=${sessionStorage.getItem('token')}`
+                `/matches/${this.props.match.params.id}/${team}/sub?token=${sessionStorage.getItem('token')}`
             );
             this.setState(response.data.match);
         }
@@ -55,7 +55,7 @@ class MatchControlView extends Component {
 
     async getMatch() {
         if (this.state.game_status !== 1) {
-            const response = await axios.get(`/api/matches/${this.props.match.params.id}`);
+            const response = await axios.get(`/matches/${this.props.match.params.id}`);
             this.setState(response.data.match);
         }
     }

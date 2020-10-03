@@ -28,7 +28,7 @@ class Home extends Component {
     async handleSubmit() {
         let stateCopy = {...this.state};
         stateCopy.sets_number = parseInt(stateCopy.sets_number)
-        const response = await axios.post('/api/matches/', stateCopy);
+        const response = await axios.post('/matches/', stateCopy);
         sessionStorage.setItem('token', response.data.match.token);
         const {setRedirect} = this.context;
         setRedirect(`/matches/${response.data.match.id}`);
