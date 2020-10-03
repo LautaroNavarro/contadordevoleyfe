@@ -76,7 +76,7 @@ class Layout extends Component {
                     {this.props.children}
                 </div>
                 <footer className='bg-light mt-2'>
-                    <div className='footer-copyright text-center py-3 text-dark'>© 2020 Copyright: <a href='https://contadordevoley.com/'>contadordevoley.com</a>
+                    <div className='footer-copyright text-center py-3 text-dark'>© 2020 Copyright: <a href='https://contadordevoley.online/'>contadordevoley.online</a>
                     </div>
                 </footer>
             </div>

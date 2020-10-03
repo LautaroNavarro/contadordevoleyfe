@@ -11,7 +11,7 @@ class EmptyState extends Component {
         const {setRedirect} = this.context;
         return (
             <div>
-                <div className="text-center row align-middle emptyStateContainer">
+                <div className="text-center row align-middle emptyStateContainer pt-5">
                     <div className="col-12 m-auto">
                         <div className="row">
                             <div className="col-12 m-auto">
