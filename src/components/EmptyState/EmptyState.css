@@ -1,0 +1,47 @@
+.emptyStateContainer {
+    min-height: 90vh;
+}
+
+.emptyStateFontColor {
+    color: #969696;
+}
+
+/**
+ * Basic CSS Media Query Template
+ * TODO: I should probably use Sass...
+ * Author: Michael Vieth
+ * ------------------------------------------
+ *  Responsive Grid Media Queries - 1280, 1024, 768, 480
+ *   1280-1024   - desktop (default grid)
+ *   1024-768    - tablet landscape
+ *   768-480     - tablet
+ *   480-less    - phone landscape & smaller
+ * --------------------------------------------
+ */
+@media all and (min-width: 1024px) and (max-width: 1280px) {
+    .emptyState {
+        min-height: 30vh;
+        max-height: 40vh;
+    }
+}
+
+@media all and (min-width: 768px) and (max-width: 1024px) {
+    .emptyState {
+        min-height: 30vh;
+        max-height: 40vh;
+    }
+}
+
+@media all and (min-width: 480px) and (max-width: 768px) {
+    .emptyState {
+        min-height: 25vh;
+        max-height: 35vh;
+    }
+}
+
+@media all and (max-width: 480px) {
+    .emptyState {
+        min-height: 20vh;
+        max-height: 30vh;
+    }
+}

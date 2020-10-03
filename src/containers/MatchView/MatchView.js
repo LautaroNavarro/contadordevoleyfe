@@ -6,6 +6,7 @@ import PermanentModal from './../../components/Modal/PermanentModal';
 import MatchSummary from './../../components/MatchSummary/MatchSummary';
 import TransparentPermanentModal from './../../components/Modal/TransparentPermanentModal';
 import Spinner from './../../components/Spinner/Spinner';
+import EmptyState from './../../components/EmptyState/EmptyState';
 
 
 class MatchControlView extends Component {
@@ -171,7 +172,7 @@ class MatchControlView extends Component {
                     </div>
                 </div>
             : ''}
-            {!this.state.id && !this.state.loading ? 'Empty state' : ''}
+            {!this.state.id && !this.state.loading ? <EmptyState/> : ''}
             </div>
         );
     }

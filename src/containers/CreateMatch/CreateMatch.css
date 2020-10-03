@@ -1,0 +1,8 @@
+.clickeable {
+  cursor: pointer;
+  fill: grey;
+}
+
+.clickeable:hover {
+  fill: black;
+}

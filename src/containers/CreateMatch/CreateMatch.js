@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './CreateMatch.css';
 import GeneralContext from './../../components/Context/GeneralContext';
 import axios from 'axios';
+import './CreateMatch.css'
 import TransparentPermanentModal from './../../components/Modal/TransparentPermanentModal';
 import Spinner from './../../components/Spinner/Spinner';
 
@@ -29,7 +30,7 @@ class Home extends Component {
     }
 
     validateForm = (e) => {
-        if (this.state.teams[0].name != "" && this.state.teams[1].name != "") {
+        if (this.state.teams[0].name !== "" && this.state.teams[1].name !== "") {
             return true;
         }
         return false;
@@ -56,7 +57,7 @@ class Home extends Component {
             setRedirect(`/matches/${response.data.match.id}`);
         } else {
             const {raiseAlert} = this.context;
-            raiseAlert('Team names are required', 'DANGER');
+            raiseAlert('El nombre de los equipos es requerido', 'DANGER');
         }
     }
 
@@ -209,7 +210,7 @@ class Home extends Component {
                             </div>
                         <div className='container'>
                             <div
-                                className='btn btn-block btn-dark mb-3'
+                                className='btn btn-block btn-dark mb-3 clickeable'
                                 onClick={() => {this.handleSubmit()}}
                             >
                                 Crear partido
