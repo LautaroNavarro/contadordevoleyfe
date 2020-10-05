@@ -61,7 +61,7 @@ class MatchControlView extends Component {
     async subPoint(team) {
         if (this.state.game_status !== 1) {
             let team_points = team === 'team_one' ? this.state.sets[ this.state.sets.length - 1].team_one_points : this.state.sets[ this.state.sets.length - 1].team_two_points;
-            if (team_points == 0) {
+            if (team_points === 0) {
                 const {raiseAlert} = this.context;
                 raiseAlert('Operacion no permitida', 'DANGER');
                 return null;
