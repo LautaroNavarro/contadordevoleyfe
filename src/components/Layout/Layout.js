@@ -66,13 +66,13 @@ class Layout extends Component {
                     <span className="text-dark"> Contador de voley</span>
                   </Link>
                 </nav>
+                <Alert
+                    message={this.state.alert.message}
+                    display={this.state.alert.display}
+                    messageType={this.state.alert.messageType}
+                    handleCloseAlert={() => {this.handleCloseAlert()}}
+                />
                 <div className='container mainContainer'>
-                    <Alert
-                        message={this.state.alert.message}
-                        display={this.state.alert.display}
-                        messageType={this.state.alert.messageType}
-                        handleCloseAlert={() => {this.handleCloseAlert()}}
-                    />
                     {this.props.children}
                 </div>
                 <footer className='bg-light mt-2'>

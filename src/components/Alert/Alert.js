@@ -17,11 +17,13 @@ const Alert = (props) => {
 
     return (
       <div className={classes.alertContainer}>
+        <div className="container">
         <div className={`alert ${ALERT_TYPES[props.messageType]} alert-dismissible fade ${props.display ? 'show' : 'd-none'} ${classes.alert}`} role="alert">
           {props.message}
           <button type="button" className="close m-auto" aria-label="Close" onClick={props.handleCloseAlert}>
             <span aria-hidden="true">&times;</span>
           </button>
+        </div>
         </div>
       </div>
     );

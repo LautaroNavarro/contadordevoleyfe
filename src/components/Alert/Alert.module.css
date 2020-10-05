@@ -1,7 +1,7 @@
 .alertContainer {
-    position: absolute;
+    position: fixed;
     text-align: center;
-    width: 81%;
+    width: 100%;
     margin-top: 5px;
 }
 
