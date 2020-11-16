@@ -1,0 +1,7 @@
+{
+  "name": "contadorDeVoley",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}

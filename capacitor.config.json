@@ -1,0 +1,8 @@
+{
+  "appId": "io.ionic.contadorDeVoley",
+  "appName": "contadorDeVoley",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "build",
+  "cordova": {}
+}
