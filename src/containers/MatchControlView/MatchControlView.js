@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import './MatchControlView.css';
 import GeneralContext from './../../components/Context/GeneralContext';
-import axios from 'axios';
 import PermanentModal from './../../components/Modal/PermanentModal';
 import MatchSummary from './../../components/MatchSummary/MatchSummary';
 import TransparentPermanentModal from './../../components/Modal/TransparentPermanentModal';

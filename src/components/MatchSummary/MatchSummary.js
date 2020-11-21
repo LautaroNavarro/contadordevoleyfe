@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 class MatchSummary extends Component {
 
     getLosserTeam () {
-        if (this.props.match.winner == 'team_one') {
+        if (this.props.match.winner === 'team_one') {
             return this.props.match.teams.team_two;
         } else {
             return this.props.match.teams.team_one;
