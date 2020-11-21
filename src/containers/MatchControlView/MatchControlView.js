@@ -34,7 +34,7 @@ class MatchControlView extends Component {
                 'color': '#0000ff',
             }
         },
-        'winner_team': null,
+        'winner': null,
     }
 
     async callEvent(action) {
@@ -63,7 +63,7 @@ class MatchControlView extends Component {
     }
 
     componentDidMount () {
-        let socket = socketIOClient('http://e50297f42ee6.ngrok.io');
+        let socket = socketIOClient('http://localhost:3001');
         this.socket = socket;
         if (!sessionStorage.getItem('token')) {
             const {setRedirect} = this.context;
@@ -117,7 +117,7 @@ class MatchControlView extends Component {
         return (
             <div>
                 {
-                    this.state.winner_team ? <PermanentModal>
+                    this.state.winner ? <PermanentModal>
                                                 <MatchSummary
                                                     match={this.state}
                                                 />
