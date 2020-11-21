@@ -62,7 +62,7 @@ class MatchControlView extends Component {
     }
 
     componentDidMount () {
-        let socket = socketIOClient('http://localhost:3001');
+        let socket = socketIOClient('https://contadordevoleybejs.herokuapp.com/');
         this.socket = socket;
         if (!sessionStorage.getItem('token')) {
             const {setRedirect} = this.context;
