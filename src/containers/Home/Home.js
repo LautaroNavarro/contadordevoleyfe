@@ -17,12 +17,12 @@ class Home extends Component {
         if (this.state.accessCodeInput === '') {
             this.setState({'displayJoinInput': this.state.displayJoinInput === false});
         } else {
-            if (this.state.accessCodeInput.length < 7) {
+            if (this.state.accessCodeInput.length < 6) {
                 const {raiseAlert} = this.context;
-                raiseAlert('El codigo de acceso debe contener 7 caraceteres', 'DANGER');
+                raiseAlert('El codigo de acceso debe contener 6 caraceteres', 'DANGER');
             } else {
                 const {setRedirect} = this.context;
-                setRedirect(`/matches/?access_code=${this.state.accessCodeInput}`);
+                setRedirect(`/matches/${this.state.accessCodeInput}`);
             }
 
 

@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import './MatchControlView.css';
 import GeneralContext from './../../components/Context/GeneralContext';
-import axios from 'axios';
 import PermanentModal from './../../components/Modal/PermanentModal';
 import MatchSummary from './../../components/MatchSummary/MatchSummary';
 import TransparentPermanentModal from './../../components/Modal/TransparentPermanentModal';
 import Spinner from './../../components/Spinner/Spinner';
 import EmptyState from './../../components/EmptyState/EmptyState';
+import socketIOClient from "socket.io-client";
 
 
 class MatchControlView extends Component {
@@ -18,105 +18,61 @@ class MatchControlView extends Component {
         'loading': true,
         'id': null,
         'sets_number': 5,
-        'access_code': null,
         'status': null,
-        'game_status': null,
         'set_points_number': null,
         'points_difference': null,
         'tie_break_points': null,
         'sets': [],
-        'teams': [
-            {
-                'name': null,
-                'color': null,
-                'sets_won': 0
+        'teams': {
+            'team_one': {
+                'name': '',
+                'color': '#ff0000',
             },
-            {
-                'name': null,
-                'color': null,
-                'sets_won': 0
+            'team_two': {
+                'name': '',
+                'color': '#0000ff',
             }
-        ],
-        'winner_team': null,
+        },
+        'winner': null,
     }
 
-    async addPoint(team) {
-        if (this.state.game_status !== 1 && !this.state.disabled_buttons) {
+    async callEvent(action) {
+        if (this.state.game_status !== 'FINISHED' && !this.state.disabled_buttons) {
             this.setState({disabled_buttons: true});
-            let response;
-            try {
-                response = await axios.post(
-                    `/matches/${this.props.match.params.id}/${team}/add?token=${sessionStorage.getItem('token')}`
-                );
-            } catch(e) {
-                console.log(e);
-                this.setState({disabled_buttons: false});
-                return null;
-            }
-            response.data.match.disabled_buttons = false;
-            this.setState(response.data.match);
+            this.socket.emit('update', {
+                'id': this.props.match.params.id,
+                'token': sessionStorage.getItem('token'),
+                'action': action,
+            });
         }
     }
 
-    async subPoint(team) {
-        if (this.state.game_status !== 1) {
-            let team_points = team === 'team_one' ? this.state.sets[ this.state.sets.length - 1].team_one_points : this.state.sets[ this.state.sets.length - 1].team_two_points;
-            if (team_points === 0) {
-                const {raiseAlert} = this.context;
-                raiseAlert('Operacion no permitida', 'DANGER');
-                return null;
+    async subscribeMatch (socket) {
+        socket.emit('watch', {'match_id': this.props.match.params.id});
+        socket.on(
+            'match_update',
+            (data) => {
+                ((that) => {
+                    console.log('Data recibida: ' + data.id);
+                    that.setState({loading: false, disabled_buttons: false});
+                    that.setState(data);
+                })(this);
             }
-            this.setState({disabled_buttons: true});
-            let response;
-            try {
-                response = await axios.post(
-                    `/matches/${this.props.match.params.id}/${team}/sub?token=${sessionStorage.getItem('token')}`
-                );
-            } catch(e) {
-                console.log(e);
-                this.setState({disabled_buttons: false});
-                return null
-            }
-            response.data.match.disabled_buttons = false;
-            this.setState(response.data.match);
-        }
-    }
-
-    async getMatch() {
-        if (this.state.game_status !== 1) {
-            let response;
-            try {
-                response = await axios.get(`/matches/${this.props.match.params.id}`);
-            } catch(e) {
-                console.log(e);
-                this.setState({loading: false});
-                return null
-            }
-            response.data.match.loading = false;
-            this.setState(response.data.match);
-        }
+        );
     }
 
     componentDidMount () {
-        if (!sessionStorage.getItem('token')) {
-            const {setRedirect} = this.context;
-            setRedirect('/');
-        } else {
-            this.getMatch();
-        }
+        let socket = socketIOClient('https://contadordevoleybejs.herokuapp.com/');
+        this.socket = socket;
+        this.subscribeMatch(socket);
     }
 
     getCurrentSet() {
-        for (let i = 0; i < this.state.sets.length; i++) {
-            // 0 => PLAYING
-            if (this.state.sets[i].game_status === 0) {
-                return this.state.sets[i];
-            }
-        }
+        return this.state.sets[this.state.sets.length - 1];
     }
 
     getRenderedSets (team) {
-        let renderedWon = team === 'team_one' ? this.state.teams[0].sets_won : this.state.teams[1].sets_won
+        let renderedWon = this.state.teams[team].sets;
         let renderedWonCount = 0;
 
         let render = [];
@@ -155,7 +111,7 @@ class MatchControlView extends Component {
         return (
             <div>
                 {
-                    this.state.winner_team ? <PermanentModal>
+                    this.state.winner ? <PermanentModal>
                                                 <MatchSummary
                                                     match={this.state}
                                                 />
@@ -164,9 +120,9 @@ class MatchControlView extends Component {
                 {modal}
                 {this.state.id ?
                 <div className='text-center'>
-                    <h2 className='pt-3 text-dark'>{`${this.state.teams[0].name} VS ${this.state.teams[1].name}`}</h2>
+                    <h2 className='pt-3 text-dark'>{`${this.state.teams.team_one.name} VS ${this.state.teams.team_two.name}`}</h2>
                     <h5 className='text-dark'>
-                        {`CÓDIGO: ${this.state.access_code}`}
+                        {`CÓDIGO: ${this.state.id}`}
                         <svg xmlns='http://www.w3.org/2000/svg' height='24' viewBox='0 0 24 24' width='24' className='clickeable'>
                             <path d='M0 0h24v24H0V0z' fill='none'/>
                             <path d='M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92zM18 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM6 13c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm12 7.02c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z'/>
@@ -181,23 +137,26 @@ class MatchControlView extends Component {
                                     this.getRenderedSets('team_one')
                                 }
                             </div>
-                            <div className='flex-fill rounded' style={ {'backgroundColor': this.state.teams[0].color } }>
-                                    <h1 className='mainTeamNumber'>{this.state.sets.length !== 0 && this.getCurrentSet() !== undefined ? this.getCurrentSet().team_one_points : 0}</h1>
+                            <div className='flex-fill rounded' style={ {'backgroundColor': this.state.teams.team_one.color } }>
+                                    <h1 className='mainTeamNumber'>{this.state.sets.length !== 0 && this.getCurrentSet() !== undefined ? this.getCurrentSet().team_one : 0}</h1>
                             </div>
-                            <div className='d-flex flex-row'>
-                                <div className='flex-fill pr-1'>
-                                    <div
-                                        className={this.state.disabled_buttons ? 'btn btn-block btn-secondary clickeable disabled' : 'btn btn-block btn-secondary clickeable'}
-                                        onClick={ () => {this.subPoint('team_one')}}
-                                    >-</div>
-                                </div>
-                                <div className='flex-fill pl-1'>
-                                    <div
-                                        className={this.state.disabled_buttons ? 'btn btn-block btn-dark clickeable disabled' : 'btn btn-block btn-dark clickeable'}
-                                        onClick={ () => {this.addPoint('team_one')}}
-                                    >+</div>
-                                </div>
-                            </div>
+                            {
+                                sessionStorage.getItem('token')  ?
+                                <div className='d-flex flex-row'>
+                                    <div className='flex-fill pr-1'>
+                                        <div
+                                            className={this.state.disabled_buttons ? 'btn btn-block btn-secondary clickeable disabled' : 'btn btn-block btn-secondary clickeable'}
+                                            onClick={ () => {this.callEvent('substract_team_one')}}
+                                        >-</div>
+                                    </div>
+                                    <div className='flex-fill pl-1'>
+                                        <div
+                                            className={this.state.disabled_buttons ? 'btn btn-block btn-dark clickeable disabled' : 'btn btn-block btn-dark clickeable'}
+                                            onClick={ () => {this.callEvent('add_team_one')}}
+                                        >+</div>
+                                    </div>
+                                </div> : ''
+                            }
                         </div>
                         <div className='container'>
                             <div className='d-flex flex-row pb-1'>
@@ -205,23 +164,26 @@ class MatchControlView extends Component {
                                     this.getRenderedSets('team_two')
                                 }
                             </div>
-                            <div className='flex-fill rounded' style={ {'backgroundColor': this.state.teams[1].color } }>
-                                    <h1 className='mainTeamNumber'>{this.state.sets.length !== 0 && this.getCurrentSet() !== undefined ? this.getCurrentSet().team_two_points : 0}</h1>
+                            <div className='flex-fill rounded' style={ {'backgroundColor': this.state.teams.team_two.color } }>
+                                    <h1 className='mainTeamNumber'>{this.state.sets.length !== 0 && this.getCurrentSet() !== undefined ? this.getCurrentSet().team_two : 0}</h1>
                             </div>
-                            <div className='d-flex flex-row'>
-                                <div className='flex-fill pr-1'>
-                                    <div
-                                        className={this.state.disabled_buttons ? 'btn btn-block btn-secondary clickeable disabled' : 'btn btn-block btn-secondary clickeable'}
-                                        onClick={ () => {this.subPoint('team_two')}}
-                                    >-</div>
-                                </div>
-                                <div className='flex-fill pl-1'>
-                                    <div
-                                        className={this.state.disabled_buttons ? 'btn btn-block btn-dark clickeable disabled' : 'btn btn-block btn-dark clickeable'}
-                                        onClick={ () => {this.addPoint('team_two')}}
-                                    >+</div>
-                                </div>
-                            </div>
+                            {
+                                sessionStorage.getItem('token')  ?
+                                <div className='d-flex flex-row'>
+                                    <div className='flex-fill pr-1'>
+                                        <div
+                                            className={this.state.disabled_buttons ? 'btn btn-block btn-secondary clickeable disabled' : 'btn btn-block btn-secondary clickeable'}
+                                            onClick={ () => {this.callEvent('substract_team_two')}}
+                                        >-</div>
+                                    </div>
+                                    <div className='flex-fill pl-1'>
+                                        <div
+                                            className={this.state.disabled_buttons ? 'btn btn-block btn-dark clickeable disabled' : 'btn btn-block btn-dark clickeable'}
+                                            onClick={ () => {this.callEvent('add_team_two')}}
+                                        >+</div>
+                                    </div>
+                                </div> : ''
+                            }
                         </div>
                     </div>
                 </div>

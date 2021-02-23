@@ -7,7 +7,7 @@ import TransparentPermanentModal from './../../components/Modal/TransparentPerma
 import Spinner from './../../components/Spinner/Spinner';
 
 
-class Home extends Component {
+class CreateMatch extends Component {
 
     static contextType = GeneralContext;
 
@@ -17,20 +17,20 @@ class Home extends Component {
         'set_points_number': 25,
         'points_difference': 2,
         'tie_break_points': 15,
-        'teams': [
-            {
+        'teams': {
+            'team_one': {
                 'name': '',
                 'color': '#ff0000',
             },
-            {
+            'team_two': {
                 'name': '',
                 'color': '#0000ff',
             }
-        ]
+        }
     }
 
     validateForm = (e) => {
-        if (this.state.teams[0].name !== "" && this.state.teams[1].name !== "") {
+        if (this.state.teams.team_one.name !== "" && this.state.teams.team_two.name !== "") {
             return true;
         }
         return false;
@@ -46,7 +46,6 @@ class Home extends Component {
             try {
                 response = await axios.post('/matches/', stateCopy);
             } catch (error) {
-                console.error(error);
                 this.setState({'loading': false});
                 const {raiseAlert} = this.context;
                 raiseAlert('Ocurrio un error al crear el partido', 'DANGER');
@@ -63,25 +62,25 @@ class Home extends Component {
 
     handleChangeTeamOneName = (e) => {
         let stateCopy = {...this.state};
-        stateCopy.teams[0].name = e.target.value;
+        stateCopy.teams.team_one.name = e.target.value;
         this.setState(stateCopy);
     }
 
     handleChangeTeamOneColor = (e) => {
         let stateCopy = {...this.state};
-        stateCopy.teams[0].color = e.target.value;
+        stateCopy.teams.team_one.color = e.target.value;
         this.setState(stateCopy);
     }
 
     handleChangeTeamTwoName = (e) => {
         let stateCopy = {...this.state};
-        stateCopy.teams[1].name = e.target.value;
+        stateCopy.teams.team_two.name = e.target.value;
         this.setState(stateCopy);
     }
 
     handleChangeTeamTwoColor = (e) => {
         let stateCopy = {...this.state};
-        stateCopy.teams[1].color = e.target.value;
+        stateCopy.teams.team_two.color = e.target.value;
         this.setState(stateCopy);
     }
 
@@ -128,7 +127,7 @@ class Home extends Component {
                                                 type='text'
                                                 className='form-control'
                                                 placeholder='Equipo A'
-                                                value={this.state.teams[0].name}
+                                                value={this.state.teams.team_one.name}
                                                 onChange={ (e) => {this.handleChangeTeamOneName(e)} }
                                             />
                                         </div>
@@ -136,7 +135,7 @@ class Home extends Component {
                                             <input
                                                 type='color'
                                                 className='form-control'
-                                                value={ this.state.teams[0].color }
+                                                value={ this.state.teams.team_one.color }
                                                 onChange={ (e) => {this.handleChangeTeamOneColor(e)} }
                                             />
                                         </div>
@@ -149,7 +148,7 @@ class Home extends Component {
                                                 type='text'
                                                 className='form-control'
                                                 placeholder='Equipo B'
-                                                value={this.state.teams[1].name}
+                                                value={this.state.teams.team_two.name}
                                                 onChange={ (e) => {this.handleChangeTeamTwoName(e)} }
                                             />
                                         </div>
@@ -157,7 +156,7 @@ class Home extends Component {
                                             <input
                                                 type='color'
                                                 className='form-control'
-                                                value={ this.state.teams[1].color }
+                                                value={ this.state.teams.team_two.color }
                                                 onChange={ (e) => {this.handleChangeTeamTwoColor(e)} }
                                             />
                                         </div>
@@ -223,4 +222,4 @@ class Home extends Component {
     }
 }
 
-export default Home;
+export default CreateMatch;

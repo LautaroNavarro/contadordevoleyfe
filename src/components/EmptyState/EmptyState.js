@@ -25,7 +25,7 @@ class EmptyState extends Component {
                         </div>
                         <div className="row">
                             <div className="col-12 m-auto">
-                                <a href="#" onClick={() => {setRedirect('/')}}>Ingresa otro codigo</a>
+                                <a href="/#" onClick={() => {setRedirect('/')}}>Ingresa otro codigo</a>
                             </div>
                         </div>
                     </div>
