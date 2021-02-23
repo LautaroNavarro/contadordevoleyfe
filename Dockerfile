@@ -2,9 +2,9 @@ FROM node:14-alpine3.13 as builder
 
 WORKDIR /app
 
-COPY ./package.json ./
+COPY ./package.json ./package-lock.json ./
 
-RUN npm install
+RUN npm ci
 
 COPY ./ ./
 
