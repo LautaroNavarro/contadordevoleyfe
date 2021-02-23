@@ -64,12 +64,7 @@ class MatchControlView extends Component {
     componentDidMount () {
         let socket = socketIOClient('https://contadordevoleybejs.herokuapp.com/');
         this.socket = socket;
-        if (!sessionStorage.getItem('token')) {
-            const {setRedirect} = this.context;
-            setRedirect('/');
-        } else {
-            this.subscribeMatch(socket);
-        }
+        this.subscribeMatch(socket);
     }
 
     getCurrentSet() {
@@ -145,20 +140,23 @@ class MatchControlView extends Component {
                             <div className='flex-fill rounded' style={ {'backgroundColor': this.state.teams.team_one.color } }>
                                     <h1 className='mainTeamNumber'>{this.state.sets.length !== 0 && this.getCurrentSet() !== undefined ? this.getCurrentSet().team_one : 0}</h1>
                             </div>
-                            <div className='d-flex flex-row'>
-                                <div className='flex-fill pr-1'>
-                                    <div
-                                        className={this.state.disabled_buttons ? 'btn btn-block btn-secondary clickeable disabled' : 'btn btn-block btn-secondary clickeable'}
-                                        onClick={ () => {this.callEvent('substract_team_one')}}
-                                    >-</div>
-                                </div>
-                                <div className='flex-fill pl-1'>
-                                    <div
-                                        className={this.state.disabled_buttons ? 'btn btn-block btn-dark clickeable disabled' : 'btn btn-block btn-dark clickeable'}
-                                        onClick={ () => {this.callEvent('add_team_one')}}
-                                    >+</div>
-                                </div>
-                            </div>
+                            {
+                                sessionStorage.getItem('token')  ?
+                                <div className='d-flex flex-row'>
+                                    <div className='flex-fill pr-1'>
+                                        <div
+                                            className={this.state.disabled_buttons ? 'btn btn-block btn-secondary clickeable disabled' : 'btn btn-block btn-secondary clickeable'}
+                                            onClick={ () => {this.callEvent('substract_team_one')}}
+                                        >-</div>
+                                    </div>
+                                    <div className='flex-fill pl-1'>
+                                        <div
+                                            className={this.state.disabled_buttons ? 'btn btn-block btn-dark clickeable disabled' : 'btn btn-block btn-dark clickeable'}
+                                            onClick={ () => {this.callEvent('add_team_one')}}
+                                        >+</div>
+                                    </div>
+                                </div> : ''
+                            }
                         </div>
                         <div className='container'>
                             <div className='d-flex flex-row pb-1'>
@@ -169,20 +167,23 @@ class MatchControlView extends Component {
                             <div className='flex-fill rounded' style={ {'backgroundColor': this.state.teams.team_two.color } }>
                                     <h1 className='mainTeamNumber'>{this.state.sets.length !== 0 && this.getCurrentSet() !== undefined ? this.getCurrentSet().team_two : 0}</h1>
                             </div>
-                            <div className='d-flex flex-row'>
-                                <div className='flex-fill pr-1'>
-                                    <div
-                                        className={this.state.disabled_buttons ? 'btn btn-block btn-secondary clickeable disabled' : 'btn btn-block btn-secondary clickeable'}
-                                        onClick={ () => {this.callEvent('substract_team_two')}}
-                                    >-</div>
-                                </div>
-                                <div className='flex-fill pl-1'>
-                                    <div
-                                        className={this.state.disabled_buttons ? 'btn btn-block btn-dark clickeable disabled' : 'btn btn-block btn-dark clickeable'}
-                                        onClick={ () => {this.callEvent('add_team_two')}}
-                                    >+</div>
-                                </div>
-                            </div>
+                            {
+                                sessionStorage.getItem('token')  ?
+                                <div className='d-flex flex-row'>
+                                    <div className='flex-fill pr-1'>
+                                        <div
+                                            className={this.state.disabled_buttons ? 'btn btn-block btn-secondary clickeable disabled' : 'btn btn-block btn-secondary clickeable'}
+                                            onClick={ () => {this.callEvent('substract_team_two')}}
+                                        >-</div>
+                                    </div>
+                                    <div className='flex-fill pl-1'>
+                                        <div
+                                            className={this.state.disabled_buttons ? 'btn btn-block btn-dark clickeable disabled' : 'btn btn-block btn-dark clickeable'}
+                                            onClick={ () => {this.callEvent('add_team_two')}}
+                                        >+</div>
+                                    </div>
+                                </div> : ''
+                            }
                         </div>
                     </div>
                 </div>
