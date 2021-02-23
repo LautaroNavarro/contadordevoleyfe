@@ -17,6 +17,7 @@ class CreateMatch extends Component {
         'set_points_number': 25,
         'points_difference': 2,
         'tie_break_points': 15,
+        'online_match': false,
         'teams': {
             'team_one': {
                 'name': '',
@@ -41,19 +42,26 @@ class CreateMatch extends Component {
             let stateCopy = {...this.state};
             stateCopy.sets_number = parseInt(stateCopy.sets_number)
             delete stateCopy.loading;
-            this.setState({'loading': true});
-            let response;
-            try {
-                response = await axios.post('/matches/', stateCopy);
-            } catch (error) {
-                this.setState({'loading': false});
-                const {raiseAlert} = this.context;
-                raiseAlert('Ocurrio un error al crear el partido', 'DANGER');
-                return null
+            delete stateCopy.online_match;
+            if (this.state.online_match) {
+                this.setState({'loading': true});
+                let response;
+                try {
+                    response = await axios.post('/matches/', stateCopy);
+                } catch (error) {
+                    this.setState({'loading': false});
+                    const {raiseAlert} = this.context;
+                    raiseAlert('Ocurrio un error al crear el partido', 'DANGER');
+                    return null
+                }
+                sessionStorage.setItem('token', response.data.match.token);
+                const {setRedirect} = this.context;
+                setRedirect(`/matches/${response.data.match.id}`);
+            } else {
+                let data = encodeURI(JSON.stringify(stateCopy));
+                const {setRedirect} = this.context;
+                setRedirect(`/local/match/?data=${data}`);
             }
-            sessionStorage.setItem('token', response.data.match.token);
-            const {setRedirect} = this.context;
-            setRedirect(`/matches/${response.data.match.id}`);
         } else {
             const {raiseAlert} = this.context;
             raiseAlert('El nombre de los equipos es requerido', 'DANGER');
@@ -98,6 +106,10 @@ class CreateMatch extends Component {
 
     handleChangeTieBreakPointsInput = (e) => {
         this.setState({'tie_break_points': parseInt(e.target.value)});
+    }
+
+    handleChangeOnlineMatchInput = (e) => {
+        this.setState({'online_match': e.target.checked});
     }
 
     render () {
@@ -202,6 +214,15 @@ class CreateMatch extends Component {
                                                 className='form-control'
                                                 value={this.state.points_difference}
                                                 onChange={ (e) => {this.handleChangePointsDifferenceInput(e)} }
+                                            />
+                                        </div>
+                                        <div className='form-group'>
+                                            <label htmlFor='sets'>Partido en linea</label>
+                                            <input
+                                                type='checkbox'
+                                                className='form-control'
+                                                checked={this.state.online_match}
+                                                onChange={ (e) => {this.handleChangeOnlineMatchInput(e)} }
                                             />
                                         </div>
                                     </div>
