@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">contadorDeVoley</string>
+    <string name="title_activity_main">contadorDeVoley</string>
+    <string name="package_name">io.ionic.contadorDeVoley</string>
+    <string name="custom_url_scheme">io.ionic.contadorDeVoley</string>
+</resources>

@@ -214,7 +214,7 @@ class LocalMatch extends Component {
                                             onClick={ () => {this.addPointTeam(1)}}
                                         >+</div>
                                     </div>
-                                </div> : ''
+                                </div>
                         </div>
                         <div className='container'>
                             <div className='d-flex flex-row pb-1'>
@@ -238,7 +238,7 @@ class LocalMatch extends Component {
                                             onClick={ () => {this.addPointTeam(2)}}
                                         >+</div>
                                     </div>
-                                </div> : ''
+                                </div>
                         </div>
                     </div>
                 </div>
